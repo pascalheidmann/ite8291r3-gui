@@ -6,6 +6,8 @@ from gi.repository import Gdk
 import random
 import os
 
+import effects
+
 
 class GridWindow(Gtk.Window):
     EXECUTABLE = 'ite8291r3-ctl'
@@ -18,10 +20,11 @@ class GridWindow(Gtk.Window):
     def __init__(self):
         self.generate_colors()
         Gtk.Window.__init__(self, title="ite-8291 gui")
+        print(effects.effects)
 
         grid = Gtk.Grid()
         grid.attach(self.create_quickselect(), 1, 1, 1, 1)
-        grid.attach(self.create_button_grid(), 1, 2, 1, 1)
+        #grid.attach(self.create_button_grid(), 1, 2, 1, 1)
         self.add(grid)
 
     def create_button_grid(self):
@@ -39,21 +42,29 @@ class GridWindow(Gtk.Window):
         return grid
 
     def create_quickselect(self):
-        grid = Gtk.Grid()
-        combo = Gtk.ComboBoxText()
-        combo.append_text("breathing")
-        combo.append_text("wave")
-        combo.append_text("random")
-        combo.append_text("breathing")
-        combo.append_text("breathing")
-        combo.append_text("marquee")
-        combo.append_text("raindrop")
-        combo.append_text("aurora")
-        combo.append_text("fireworks")
+        grid = Gtk.Grid(expand = True)
+        combo_effect = Gtk.ComboBoxText()
+        combo_effect.connect("changed", self.on_effect_select)
 
-        combo.connect("changed", self.on_effect_select)
+        for effect in effects.effects:
+            combo_effect.append_text(effect)
+        grid.add(combo_effect)
 
-        grid.add(combo)
+        speed = Gtk.Scale.new_with_range(Gtk.Orientation.HORIZONTAL, .5, 10.0, .1)
+        grid.add(speed)
+
+        color = Gtk.ColorButton()
+        grid.add(color)
+
+        direction = Gtk.ComboBoxText()
+        for d in ["left", "right", "up", "down"]:
+            direction.append_text(d)
+
+        reactive = Gtk.Switch()
+        grid.add(reactive)
+
+        apply = Gtk.Button()
+        grid.add(apply)
 
         return grid
 
